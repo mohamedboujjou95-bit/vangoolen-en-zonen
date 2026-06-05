@@ -11,10 +11,10 @@ import type {
 
 // ─── Navigation ────────────────────────────────────────────────
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Diensten",    href: "/diensten" },
-  { label: "Tarieven",    href: "/#tarieven" },
-  { label: "Over Ons",    href: "/#over-ons" },
-  { label: "Contact",     href: "/contact" },
+  { label: "Diensten",       href: "/diensten" },
+  { label: "Tarieven",       href: "/#tarieven" },
+  { label: "Word Partner",   href: "/partners" },
+  { label: "Contact",        href: "/contact" },
 ];
 
 export const PHONE_NUMBER     = "020 – 123 45 67";
