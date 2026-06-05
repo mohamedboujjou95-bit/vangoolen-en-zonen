@@ -35,7 +35,7 @@ export function HeroSection() {
             <Link href="/boeking" style={{display:"inline-flex",alignItems:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"#C5A059",color:"#1a3a6b",fontWeight:700,fontSize:"1rem",textDecoration:"none"}}>
               Direct Gilde-Loodgieter Boeken <ChevronRight style={{height:"1.25rem",width:"1.25rem"}} />
             </Link>
-            <a href={PHONE_HREF} style={{display:"inline-flex",alignItems:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"transparent",color:"#C5A059",fontWeight:700,fontSize:"1rem",textDecoration:"none",border:"2px solid #C5A059"}}>
+            <a href={PHONE_HREF} style={{display:"inline-flex",alignItems:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"#C5A059",color:"#1a3a6b",fontWeight:700,fontSize:"1rem",textDecoration:"none",border:"1px solid #C5A059"}}>
               <Phone style={{height:"1.25rem",width:"1.25rem"}} /> {PHONE_NUMBER}
             </a>
           </div>
