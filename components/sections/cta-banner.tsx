@@ -5,25 +5,21 @@ import { PHONE_NUMBER, PHONE_HREF } from "@/lib/data";
 
 export function CtaBannerSection() {
   return (
-    <section className="section-sm bg-primary-800 relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-DEFAULT to-transparent opacity-40" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-DEFAULT to-transparent opacity-40" />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 80% at 50% 50%, rgba(197,160,89,0.06) 0%, transparent 70%)" }} />
-      <div className="container-vg relative z-10 text-center">
-        <h2 className="font-display font-bold text-3xl md:text-4xl text-cream mb-4">
+    <section style={{background:"#1a3a6b",padding:"4rem 0",position:"relative",overflow:"hidden",borderTop:"1px solid rgba(197,160,89,0.2)",borderBottom:"1px solid rgba(197,160,89,0.2)"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 80% at 50% 50%, rgba(197,160,89,0.07) 0%, transparent 70%)",pointerEvents:"none"}} />
+      <div className="container-vg" style={{position:"relative",zIndex:1,textAlign:"center"}}>
+        <h2 className="font-display font-bold" style={{color:"#FDFAF6",fontSize:"clamp(1.75rem,3vw,2.4rem)",marginBottom:"1rem"}}>
           Heeft u een acute noodsituatie?
         </h2>
-        <p className="text-cream/60 mb-8 max-w-md mx-auto">
-          Bel direct of boek online. Wij zijn er altijd — dag en nacht, ook in het weekend en op feestdagen.
+        <p style={{color:"rgba(253,250,246,0.75)",marginBottom:"2rem",maxWidth:"400px",margin:"0 auto 2rem",fontSize:"1rem"}}>
+          Bel direct of boek online. Wij zijn er altijd — dag en nacht, ook in het weekend.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/boeking" className="inline-flex items-center justify-center gap-2 h-14 px-9 text-base font-bold rounded bg-gold-DEFAULT text-primary-800 border border-gold-DEFAULT hover:bg-gold-dark hover:text-white transition-all duration-200 shadow-gold">
-            Nu Online Boeken
-            <ChevronRight className="h-5 w-5" />
+        <div style={{display:"flex",gap:"1rem",justifyContent:"center",flexWrap:"wrap"}}>
+          <Link href="/boeking" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"#C5A059",color:"#1a3a6b",fontWeight:700,fontSize:"1rem",textDecoration:"none",border:"1px solid #C5A059"}}>
+            Nu Online Boeken <ChevronRight style={{height:"1.25rem",width:"1.25rem"}} />
           </Link>
-          <a href={PHONE_HREF} className="inline-flex items-center justify-center gap-2 h-14 px-9 text-base font-semibold rounded bg-transparent text-gold-DEFAULT border-2 border-gold-DEFAULT hover:bg-gold-DEFAULT hover:text-primary-800 transition-all duration-200">
-            <Phone className="h-5 w-5" />
-            {PHONE_NUMBER}
+          <a href={PHONE_HREF} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"transparent",color:"#FDFAF6",fontWeight:600,fontSize:"1rem",textDecoration:"none",border:"2px solid rgba(255,255,255,0.5)"}}>
+            <Phone style={{height:"1.25rem",width:"1.25rem"}} /> {PHONE_NUMBER}
           </a>
         </div>
       </div>

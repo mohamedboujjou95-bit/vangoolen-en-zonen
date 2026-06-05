@@ -1,105 +1,88 @@
 "use client";
-
 import React, { useState } from "react";
 import Link from "next/link";
 import { Droplets, Waves, Flame, ChevronRight, Info } from "lucide-react";
 import { GILDE_TARIEVEN } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import type { ServiceId } from "@/types";
-
-const SERVICE_ICONS: Record<ServiceId, React.ElementType> = {
-  lekkage: Droplets,
-  verstopping: Waves,
-  "cv-storing": Flame,
-};
-
+const SERVICE_ICONS: Record<ServiceId, React.ElementType> = { lekkage: Droplets, verstopping: Waves, "cv-storing": Flame };
 export function TariefCalculatorSection() {
   const [selected, setSelected] = useState<ServiceId>("lekkage");
   const [extraMinutes, setExtraMinutes] = useState<number>(0);
-
   const tarief = GILDE_TARIEVEN.find((t) => t.serviceId === selected)!;
   const extraBlocks = Math.ceil(extraMinutes / 15);
   const totalPrice = tarief.vastTarief + extraBlocks * tarief.vervolgtarief;
-
   return (
-    <section id="tarieven" className="section bg-primary-900 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 60% at 20% 50%, rgba(197,160,89,0.05) 0%, transparent 70%)" }} />
-      <div className="container-vg relative z-10">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="overline mb-4" style={{color:"rgba(197,160,89,0.8)"}}>Volledige Transparantie</span>
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-cream mt-3">Vaste Gildetarieven</h2>
-          <div className="w-16 h-0.5 bg-gold-DEFAULT rounded mx-auto mt-4" />
-          <p className="text-cream/60 mt-4 text-sm leading-relaxed">Bereken direct wat uw reparatie kost. Geen vage schattingen — u weet het vooraf.</p>
+    <section id="tarieven" style={{background:"#0e1f42",padding:"5rem 0",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 50% 60% at 20% 50%, rgba(197,160,89,0.05) 0%, transparent 70%)",pointerEvents:"none"}} />
+      <div className="container-vg" style={{position:"relative",zIndex:1}}>
+        <div style={{textAlign:"center",maxWidth:"540px",margin:"0 auto 3rem"}}>
+          <span className="overline" style={{color:"rgba(197,160,89,0.9)"}}>Volledige Transparantie</span>
+          <h2 className="font-display font-bold" style={{fontSize:"clamp(1.75rem,3vw,2.4rem)",color:"#FDFAF6",marginTop:"0.75rem"}}>Vaste Gildetarieven</h2>
+          <div style={{width:"4rem",height:"3px",background:"#C5A059",borderRadius:"999px",margin:"1rem auto"}} />
+          <p style={{color:"rgba(253,250,246,0.7)",fontSize:"0.9rem",lineHeight:1.6}}>Bereken direct wat uw reparatie kost. Geen vage schattingen — u weet het vooraf.</p>
         </div>
-
-        <div className="max-w-3xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div style={{maxWidth:"720px",margin:"0 auto"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"0.75rem",marginBottom:"1.5rem"}}>
             {GILDE_TARIEVEN.map((t) => {
               const Icon = SERVICE_ICONS[t.serviceId];
               const isActive = selected === t.serviceId;
               return (
                 <button key={t.serviceId} onClick={() => { setSelected(t.serviceId); setExtraMinutes(0); }}
-                  className={`relative flex flex-col items-center gap-2.5 p-5 rounded-lg border-2 transition-all duration-200 cursor-pointer text-center group ${isActive ? "bg-gold-DEFAULT border-gold-DEFAULT text-primary-800" : "bg-white/5 border-white/10 text-cream/70 hover:border-gold-DEFAULT/40"}`}>
-                  <Icon className={`h-7 w-7 ${isActive ? "text-primary-800" : "text-gold-DEFAULT"}`} />
-                  <span className={`text-sm font-semibold font-body leading-tight ${isActive ? "text-primary-800" : ""}`}>{t.service}</span>
-                  <span className={`text-xl font-display font-bold ${isActive ? "text-primary-800" : "text-gold-DEFAULT"}`}>{formatPrice(t.vastTarief)}</span>
-                </button>
-              );
+                  style={{padding:"1.25rem 1rem",borderRadius:"0.625rem",border:`2px solid ${isActive?"#C5A059":"rgba(255,255,255,0.15)"}`,background:isActive?"#C5A059":"rgba(255,255,255,0.05)",cursor:"pointer",textAlign:"center",transition:"all 0.2s"}}>
+                  <Icon style={{height:"1.75rem",width:"1.75rem",color:isActive?"#1a3a6b":"#C5A059",margin:"0 auto 0.5rem"}} />
+                  <span style={{display:"block",fontSize:"0.8rem",fontWeight:600,color:isActive?"#1a3a6b":"#FDFAF6",lineHeight:1.3}}>{t.service}</span>
+                  <span style={{display:"block",fontSize:"1.25rem",fontWeight:700,color:isActive?"#1a3a6b":"#C5A059",marginTop:"0.25rem",fontFamily:"var(--font-display)"}}>{formatPrice(t.vastTarief)}</span>
+                </button>);
             })}
           </div>
-
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 md:p-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1">
-                <h3 className="font-display font-bold text-cream text-xl mb-4">{tarief.service}</h3>
-                <div className="space-y-3 mb-5">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                    <span className="text-sm text-cream/70">Vast gildetarief (incl. eerste 30 min)</span>
-                    <span className="font-bold text-gold-DEFAULT font-display">{formatPrice(tarief.vastTarief)}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                    <span className="text-sm text-cream/70">Vervolgtarief (per 15 min)</span>
-                    <span className="font-semibold text-cream/80">{formatPrice(tarief.vervolgtarief)}</span>
-                  </div>
-                  {extraBlocks > 0 && (
-                    <div className="flex items-center justify-between py-2.5 border-b border-white/10">
-                      <span className="text-sm text-cream/70">Extra werk ({extraMinutes} min = {extraBlocks}× blok)</span>
-                      <span className="font-semibold text-cream/80">{formatPrice(extraBlocks * tarief.vervolgtarief)}</span>
+          <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"0.75rem",padding:"2rem"}}>
+            <div style={{display:"flex",flexDirection:"column",gap:"1.5rem"}}>
+              <div style={{flex:1}}>
+                <h3 className="font-display font-bold" style={{color:"#FDFAF6",fontSize:"1.25rem",marginBottom:"1.25rem"}}>{tarief.service}</h3>
+                <div style={{display:"flex",flexDirection:"column",gap:"0"}}>
+                  {[
+                    {label:"Vast gildetarief (incl. eerste 30 min)",val:formatPrice(tarief.vastTarief),highlight:true},
+                    {label:"Vervolgtarief (per 15 min)",val:formatPrice(tarief.vervolgtarief),highlight:false},
+                    ...(extraBlocks>0?[{label:`Extra werk (${extraMinutes} min)`,val:formatPrice(extraBlocks*tarief.vervolgtarief),highlight:false}]:[]),
+                  ].map((row,i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0.75rem 0",borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
+                      <span style={{fontSize:"0.875rem",color:"rgba(253,250,246,0.8)"}}>{row.label}</span>
+                      <span style={{fontWeight:700,color:row.highlight?"#C5A059":"#FDFAF6",fontSize:row.highlight?"1.1rem":"1rem"}}>{row.val}</span>
                     </div>
-                  )}
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="font-semibold text-cream">Totaal geschat</span>
-                    <span className="font-display font-bold text-2xl text-gold-DEFAULT">{formatPrice(totalPrice)}</span>
+                  ))}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingTop:"1rem"}}>
+                    <span style={{fontWeight:600,color:"#FDFAF6",fontSize:"1rem"}}>Totaal geschat</span>
+                    <span className="font-display font-bold" style={{color:"#C5A059",fontSize:"1.75rem"}}>{formatPrice(totalPrice)}</span>
                   </div>
                 </div>
-                <div className="flex items-start gap-2 p-3 bg-gold-DEFAULT/10 rounded-md border border-gold-DEFAULT/20">
-                  <Info className="h-4 w-4 text-gold-DEFAULT mt-0.5 shrink-0" />
-                  <p className="text-xs text-cream/60 leading-relaxed">Prijzen zijn inclusief btw. Geen toeslag voor avond-, nacht- of weekendwerk.</p>
+                <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",padding:"0.75rem",background:"rgba(197,160,89,0.12)",borderRadius:"0.5rem",border:"1px solid rgba(197,160,89,0.25)",marginTop:"1rem"}}>
+                  <Info style={{height:"1rem",width:"1rem",color:"#C5A059",flexShrink:0,marginTop:"0.1rem"}} />
+                  <p style={{fontSize:"0.75rem",color:"rgba(253,250,246,0.75)",lineHeight:1.6}}>Prijzen inclusief btw. Geen toeslag voor avond-, nacht- of weekendwerk.</p>
                 </div>
               </div>
-              <div className="md:w-52 flex flex-col">
-                <p className="text-sm font-semibold text-cream mb-3">Schat extra werktijd:</p>
-                <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
-                  {[0, 15, 30, 45, 60].map((mins) => (
-                    <button key={mins} onClick={() => setExtraMinutes(mins)}
-                      className={`px-3 py-2 rounded text-xs font-medium text-left transition-all duration-150 border ${mins === 0 ? "col-span-2 md:col-span-1" : ""} ${extraMinutes === mins ? "bg-gold-DEFAULT text-primary-800 border-gold-DEFAULT font-bold" : "bg-white/5 text-cream/60 border-white/10 hover:border-gold-DEFAULT/30"}`}>
-                      {mins === 0 ? "Eerste 30 min (inbegrepen)" : `+ ${mins} min extra`}
+              <div>
+                <p style={{fontSize:"0.875rem",fontWeight:600,color:"#FDFAF6",marginBottom:"0.75rem"}}>Schat extra werktijd:</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.5rem"}}>
+                  {[0,15,30,45,60].map((mins)=>(
+                    <button key={mins} onClick={()=>setExtraMinutes(mins)}
+                      style={{padding:"0.6rem 0.75rem",borderRadius:"0.375rem",fontSize:"0.75rem",fontWeight:500,textAlign:"left",cursor:"pointer",transition:"all 0.15s",border:`1px solid ${extraMinutes===mins?"#C5A059":"rgba(255,255,255,0.15)"}`,background:extraMinutes===mins?"#C5A059":"rgba(255,255,255,0.05)",color:extraMinutes===mins?"#1a3a6b":"#FDFAF6",gridColumn:mins===0?"span 2":"span 1"}}>
+                      {mins===0?"Eerste 30 min (inbegrepen)":`+ ${mins} min extra`}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
-            <div className="mt-6 pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3">
-              <Link href={`/boeking?service=${selected}`} className="flex-1 inline-flex items-center justify-center gap-2 h-12 px-7 text-base font-bold rounded bg-gold-DEFAULT text-primary-800 border border-gold-DEFAULT hover:bg-gold-dark hover:text-white transition-all duration-200 shadow-gold">
-                Boek Nu voor {formatPrice(tarief.vastTarief)}
-                <ChevronRight className="h-4 w-4" />
+            <div style={{borderTop:"1px solid rgba(255,255,255,0.15)",paddingTop:"1.5rem",marginTop:"1.5rem",display:"flex",gap:"0.75rem",flexWrap:"wrap"}}>
+              <Link href={`/boeking?service=${selected}`} style={{flex:1,minWidth:"180px",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"0.5rem",height:"3rem",borderRadius:"0.375rem",background:"#C5A059",color:"#1a3a6b",fontWeight:700,fontSize:"0.9rem",textDecoration:"none",border:"1px solid #C5A059"}}>
+                Boek Nu voor {formatPrice(tarief.vastTarief)} <ChevronRight style={{height:"1rem",width:"1rem"}} />
               </Link>
-              <Link href="/diensten" className="inline-flex items-center justify-center gap-2 h-12 px-7 text-base font-semibold rounded bg-transparent text-gold-DEFAULT border-2 border-gold-DEFAULT hover:bg-gold-DEFAULT hover:text-primary-800 transition-all duration-200">
+              <Link href="/diensten" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"0.5rem",height:"3rem",padding:"0 1.5rem",borderRadius:"0.375rem",background:"transparent",color:"#FDFAF6",fontWeight:600,fontSize:"0.9rem",textDecoration:"none",border:"1px solid rgba(255,255,255,0.3)"}}>
                 Meer Info
               </Link>
             </div>
           </div>
-          <p className="text-center text-xs text-cream/30 mt-4">Vaste tarieven — geen voorrijkosten · Geen toeslag avond/nacht/weekend · Direct afrekenen aan de deur</p>
+          <p style={{textAlign:"center",fontSize:"0.75rem",color:"rgba(253,250,246,0.4)",marginTop:"1rem"}}>Vaste tarieven — geen voorrijkosten · Geen toeslag avond/nacht/weekend · Direct afrekenen aan de deur</p>
         </div>
       </div>
     </section>
