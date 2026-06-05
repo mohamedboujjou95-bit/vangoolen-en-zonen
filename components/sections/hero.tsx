@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import Link from "next/link";
 import { Phone, ChevronRight, Clock, ShieldCheck, Star } from "lucide-react";
@@ -7,68 +6,47 @@ import { PHONE_NUMBER, PHONE_HREF } from "@/lib/data";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden hero-bg">
-      <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(197,160,89,0.03) 60px, rgba(197,160,89,0.03) 61px)" }} />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full pointer-events-none" style={{ background: "radial-gradient(ellipse at 80% 20%, rgba(197,160,89,0.07) 0%, transparent 65%)" }} />
-
-      <div className="container-vg relative z-10 pt-28 pb-20 md:pt-32 md:pb-24">
-        <div className="max-w-3xl">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="w-5 h-px bg-gold-DEFAULT" />
-            <span className="text-xs font-semibold tracking-[0.2em] uppercase text-gold-DEFAULT font-body">
-              Algemeene Loodgieters Gilde — Gecertificeerd Vakmanschap
-            </span>
-            <span className="w-5 h-px bg-gold-DEFAULT" />
+    <section style={{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",background:"linear-gradient(160deg, #0e1f42 0%, #1a3a6b 55%, #163162 100%)",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,backgroundImage:"repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(197,160,89,0.03) 60px, rgba(197,160,89,0.03) 61px)",pointerEvents:"none"}} />
+      <div style={{position:"absolute",top:0,right:0,width:"600px",height:"600px",borderRadius:"50%",background:"radial-gradient(ellipse at 80% 20%, rgba(197,160,89,0.07) 0%, transparent 65%)",pointerEvents:"none"}} />
+      <div className="container-vg" style={{position:"relative",zIndex:1,paddingTop:"7rem",paddingBottom:"5rem"}}>
+        <div style={{maxWidth:"750px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"1.5rem"}}>
+            <span style={{width:"1.25rem",height:"1px",background:"#C5A059",display:"block"}} />
+            <span style={{fontSize:"0.7rem",fontWeight:600,letterSpacing:"0.2em",textTransform:"uppercase",color:"#C5A059"}}>Algemeene Loodgieters Gilde — Gecertificeerd Vakmanschap</span>
+            <span style={{width:"1.25rem",height:"1px",background:"#C5A059",display:"block"}} />
           </div>
-
-          <h1 className="text-4xl sm:text-5xl lg:text-[3.6rem] font-display font-bold text-cream leading-[1.08] tracking-tight mb-6">
+          <h1 className="font-display font-bold" style={{fontSize:"clamp(2.4rem,5vw,3.6rem)",color:"#FDFAF6",lineHeight:1.08,letterSpacing:"-0.02em",marginBottom:"1.5rem"}}>
             Binnen{" "}
-            <span className="relative inline-block">
-              <span className="relative z-10 text-gold-gradient">2 uur</span>
-              <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gold-DEFAULT/50 rounded" />
-            </span>{" "}
-            een gecertificeerde<br className="hidden sm:block" />{" "}
-            gilde-loodgieter aan de deur.
+            <span style={{background:"linear-gradient(135deg, #C5A059 0%, #E8D5A3 50%, #C5A059 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>2 uur</span>
+            {" "}een gecertificeerde<br />gilde-loodgieter aan de deur.
           </h1>
-
-          <p className="text-lg md:text-xl text-cream/70 font-body leading-relaxed mb-8 max-w-xl">
-            Vaste gildetarieven, geen verrassingen achteraf. Lekkages, rioolverstopping,
-            cv-storing — wij lossen het definitief op bij het eerste bezoek.
+          <p style={{fontSize:"1.125rem",color:"rgba(253,250,246,0.75)",lineHeight:1.65,marginBottom:"2rem",maxWidth:"520px"}}>
+            Vaste gildetarieven, geen verrassingen achteraf. Lekkages, rioolverstopping, cv-storing — wij lossen het definitief op bij het eerste bezoek.
           </p>
-
-          <div className="flex flex-wrap gap-4 mb-10">
-            {[
-              { icon: ShieldCheck, text: "100% Transparante Tarieven" },
-              { icon: Clock, text: "Geen Toeslag Avond & Weekend" },
-              { icon: Star, text: "4.8 / 5 Klantbeoordeling" },
-            ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-1.5 text-sm text-cream/60">
-                <Icon className="h-4 w-4 text-gold-DEFAULT shrink-0" />
-                {text}
+          <div style={{display:"flex",flexWrap:"wrap",gap:"1.25rem",marginBottom:"2.5rem"}}>
+            {[{icon:ShieldCheck,text:"100% Transparante Tarieven"},{icon:Clock,text:"Geen Toeslag Avond & Weekend"},{icon:Star,text:"4.8 / 5 Klantbeoordeling"}].map(({icon:Icon,text})=>(
+              <div key={text} style={{display:"flex",alignItems:"center",gap:"0.375rem",fontSize:"0.8125rem",color:"rgba(253,250,246,0.65)"}}>
+                <Icon style={{height:"0.875rem",width:"0.875rem",color:"#C5A059",flexShrink:0}} />{text}
               </div>
             ))}
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/boeking" className="inline-flex items-center justify-center gap-2 h-14 px-9 text-base font-bold rounded bg-gold-DEFAULT text-primary-800 border border-gold-DEFAULT hover:bg-gold-dark hover:text-white transition-all duration-200 shadow-gold hover:shadow-gold-lg">
-              Direct Gilde-Loodgieter Boeken
-              <ChevronRight className="h-5 w-5" />
+          <div style={{display:"flex",flexWrap:"wrap",gap:"0.75rem"}}>
+            <Link href="/boeking" style={{display:"inline-flex",alignItems:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"#C5A059",color:"#1a3a6b",fontWeight:700,fontSize:"1rem",textDecoration:"none"}}>
+              Direct Gilde-Loodgieter Boeken <ChevronRight style={{height:"1.25rem",width:"1.25rem"}} />
             </Link>
-            <a href={PHONE_HREF} className="inline-flex items-center justify-center gap-2 h-14 px-9 text-base font-semibold rounded bg-transparent text-gold-DEFAULT border-2 border-gold-DEFAULT hover:bg-gold-DEFAULT hover:text-primary-800 transition-all duration-200">
-              <Phone className="h-5 w-5" />
-              {PHONE_NUMBER}
+            <a href={PHONE_HREF} style={{display:"inline-flex",alignItems:"center",gap:"0.5rem",height:"3.5rem",padding:"0 2.25rem",borderRadius:"0.375rem",background:"transparent",color:"#C5A059",fontWeight:700,fontSize:"1rem",textDecoration:"none",border:"2px solid #C5A059"}}>
+              <Phone style={{height:"1.25rem",width:"1.25rem"}} /> {PHONE_NUMBER}
             </a>
           </div>
-
-          <p className="mt-5 text-xs text-cream/40 font-body">
+          <p style={{marginTop:"1.25rem",fontSize:"0.75rem",color:"rgba(253,250,246,0.4)"}}>
             Boek online in 2 minuten · Geen aanbetaling vereist · Afrekening aan de deur
           </p>
         </div>
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-none">
-        <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-14 text-cream" preserveAspectRatio="none">
-          <path d="M0 56L48 48C96 40 192 24 288 18.7C384 13.3 480 18.7 576 26.7C672 34.7 768 45.3 864 45.3C960 45.3 1056 34.7 1152 29.3C1248 24 1344 24 1392 24L1440 24V56H1392C1344 56 1248 56 1152 56C1056 56 960 56 864 56C768 56 672 56 576 56C480 56 384 56 288 56C192 56 96 56 48 56H0V56Z" fill="currentColor"/>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",lineHeight:0}}>
+        <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:"100%",height:"56px",display:"block"}} preserveAspectRatio="none">
+          <path d="M0 56L48 48C96 40 192 24 288 18.7C384 13.3 480 18.7 576 26.7C672 34.7 768 45.3 864 45.3C960 45.3 1056 34.7 1152 29.3C1248 24 1344 24 1392 24L1440 24V56H0V56Z" fill="#FDFAF6"/>
         </svg>
       </div>
     </section>
