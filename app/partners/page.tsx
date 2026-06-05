@@ -16,7 +16,7 @@ export default function PartnersPage() {
   const [openFaq,setOpenFaq] = useState<number|null>(null);
   const set = (k:keyof PartnerForm,v:string) => { setForm(p=>({...p,[k]:v})); setErrors(p=>({...p,[k]:""})); };
   const validate = () => { const e:Partial<PartnerForm>={}; if(!form.firstName)e.firstName="Vereist"; if(!form.lastName)e.lastName="Vereist"; if(!form.phone)e.phone="Vereist"; if(!form.email||!/\S+@\S+\.\S+/.test(form.email))e.email="Geldig e-mail vereist"; if(!form.city)e.city="Vereist"; if(!form.diploma)e.diploma="Vereist"; setErrors(e); return Object.keys(e).length===0; };
-  const handleSubmit = async(e:React.FormEvent) => { e.preventDefault(); if(!validate())return; setLoading(true); await simulateDelay(1600); setLoading(false); setSent(true); };
+  const handleSubmit = async(e:React.FormEvent) => { e.preventDefault(); if(!validate())return; setLoading(true); try { await fetch("/api/partner", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(form) }); } catch(e) {} setLoading(false); setSent(true); };
   const faqs = [{q:"Hoeveel verdien ik per klus?",a:"Je ontvangt een vast hoog percentage van het gildetarief. Het exacte percentage bespreken we tijdens het intakegesprek."},{q:"Ben ik verplicht beschikbaar te zijn?",a:"Nee. Je geeft zelf aan wanneer je beschikbaar bent via de gilde-app. Geen minimale uren."},{q:"Hoe wordt afgerekend?",a:"De klant betaalt direct aan jou. Wekelijks verrekenen wij het gilde-percentage via automatische factuur."},{q:"Hoe snel kan ik starten?",a:"Na goedkeuring plannen we een intakegesprek binnen 5 werkdagen. Gemiddeld start je binnen 2 weken."}];
   return (
     <><Navbar /><main>

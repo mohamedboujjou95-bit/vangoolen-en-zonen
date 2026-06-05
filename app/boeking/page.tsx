@@ -99,7 +99,7 @@ function BoekingForm() {
   const handleSubmit = async () => {
     if (!validateStep3()) return;
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1800));
+    try { await fetch("/api/boeking", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(form) }); } catch(e) {} await new Promise(r => setTimeout(r, 800));
     setSubmitting(false);
     setDone(true);
   };
