@@ -5,97 +5,57 @@ import { createClient } from "@supabase/supabase-js";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { firstName, lastName, phone, email, serviceLabel, urgency, city, address, houseNumber, notes } = body;
+  const body = await request.json();
+  const { firstName, lastName, phone, email, serviceLabel, urgency, city, address, houseNumber, notes } = body;
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_KEY!
-    );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
+  
+  console.log("URL:", supabaseUrl ? "SET" : "MISSING");
+  console.log("KEY:", supabaseKey ? supabaseKey.substring(0,10) : "MISSING");
 
-    // Sla boeking op
-    const { data: boeking, error: boekingError } = await supabase
-      .from("boekingen")
-      .insert({
-        service: serviceLabel,
-        urgentie: urgency,
-        klant_naam: `${firstName} ${lastName}`,
-        klant_telefoon: phone,
-        klant_email: email,
-        adres: `${address} ${houseNumber}`,
-        stad: city,
-        opmerkingen: notes,
-        status: "nieuw",
-      })
-      .select()
-      .single();
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log("Boeking result:", JSON.stringify(boeking), "Error:", JSON.stringify(boekingError));
-    // Niet gooien als error — ga gewoon door
+  // Stap 1: sla boeking op
+  const boekingResult = await supabase.from("boekingen").insert({
+    service: serviceLabel,
+    urgentie: urgency,
+    klant_naam: `${firstName} ${lastName}`,
+    klant_telefoon: phone,
+    klant_email: email,
+    adres: `${address} ${houseNumber}`,
+    stad: city,
+    opmerkingen: notes,
+    status: "nieuw",
+  }).select().single();
 
-    // Zoek beschikbare partner
-    const { data: partners, error: partnerError } = await supabase
-      .from("partners")
-      .select("*")
-      .eq("actief", true)
-      .eq("beschikbaar", true)
-      .limit(1);
+  console.log("Boeking:", boekingResult.error ? boekingResult.error.message : "OK");
 
-    console.log("Partner query result:", JSON.stringify(partners), "Error:", partnerError);
+  // Stap 2: zoek partner
+  const partnerResult = await supabase.from("partners").select("*").eq("actief", true).eq("beschikbaar", true).limit(1);
+  
+  console.log("Partners:", JSON.stringify(partnerResult.data), "Error:", partnerResult.error?.message);
 
-    const partner = partners?.[0];
+  const partner = partnerResult.data?.[0];
+  const boeking = boekingResult.data;
 
-    if (partner && boeking) {
-      // Automatisch toewijzen
-      await supabase
-        .from("boekingen")
-        .update({ partner_id: partner.id, status: "toegewezen" })
-        .eq("id", boeking.id);
-
-      // Email naar jou met instructie om door te sturen
-      await resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: ["mohamedboujjou95@gmail.com"],
-        subject: `✅ Auto-Toegewezen: ${serviceLabel} → DOORSTUREN naar ${partner.naam}`,
-        html: `
-          <h2>Klus Automatisch Toegewezen!</h2>
-          <p>Stuur dit door naar: <strong>${partner.naam}</strong> — <strong>${partner.email}</strong> — <strong>${partner.telefoon}</strong></p>
-          <hr/>
-          <h3>Klus Details:</h3>
-          <p><strong>Service:</strong> ${serviceLabel}</p>
-          <p><strong>Urgentie:</strong> ${urgency}</p>
-          <p><strong>Klant:</strong> ${firstName} ${lastName}</p>
-          <p><strong>Telefoon klant:</strong> <strong>${phone}</strong></p>
-          <p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p>
-          ${notes ? `<p><strong>Opmerkingen:</strong> ${notes}</p>` : ""}
-          <br/>
-          <p><a href="https://vangoolen-en-zonen.vercel.app/admin">Open Dashboard →</a></p>
-        `,
-      });
-
-    } else {
-      // Geen beschikbare partner
-      await resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: ["mohamedboujjou95@gmail.com"],
-        subject: `⚠️ Handmatig Toewijzen: ${serviceLabel} in ${city}`,
-        html: `
-          <h2>Nieuwe Boeking — Geen Beschikbare Partner</h2>
-          <p><strong>Service:</strong> ${serviceLabel}</p>
-          <p><strong>Klant:</strong> ${firstName} ${lastName}</p>
-          <p><strong>Telefoon:</strong> ${phone}</p>
-          <p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p>
-          ${notes ? `<p><strong>Opmerkingen:</strong> ${notes}</p>` : ""}
-          <br/>
-          <p><a href="https://vangoolen-en-zonen.vercel.app/admin">Wijs handmatig toe →</a></p>
-        `,
-      });
-    }
-
-    return NextResponse.json({ success: true, autoAssigned: !!partner });
-  } catch (error) {
-    console.error("Route error:", error);
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+  // Stap 3: wijs toe of stuur melding
+  if (partner && boeking) {
+    await supabase.from("boekingen").update({ partner_id: partner.id, status: "toegewezen" }).eq("id", boeking.id);
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: ["mohamedboujjou95@gmail.com"],
+      subject: `✅ DOORSTUREN naar ${partner.naam} (${partner.email}): ${serviceLabel} in ${city}`,
+      html: `<h2>Klus Automatisch Toegewezen</h2><p>Stuur door naar: <strong>${partner.naam}</strong> — ${partner.email} — ${partner.telefoon}</p><hr/><p><strong>Klant:</strong> ${firstName} ${lastName}</p><p><strong>Telefoon:</strong> ${phone}</p><p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p><p><strong>Service:</strong> ${serviceLabel}</p><p><strong>Urgentie:</strong> ${urgency}</p>${notes?`<p><strong>Opmerkingen:</strong> ${notes}</p>`:""}<br/><p><a href="https://vangoolen-en-zonen.vercel.app/admin">Open Dashboard →</a></p>`,
+    });
+  } else {
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: ["mohamedboujjou95@gmail.com"],
+      subject: `⚠️ Handmatig Toewijzen: ${serviceLabel} in ${city}`,
+      html: `<h2>Geen Beschikbare Partner</h2><p><strong>Klant:</strong> ${firstName} ${lastName}</p><p><strong>Telefoon:</strong> ${phone}</p><p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p><p><strong>Service:</strong> ${serviceLabel}</p><br/><p><a href="https://vangoolen-en-zonen.vercel.app/admin">Wijs handmatig toe →</a></p>`,
+    });
   }
+
+  return NextResponse.json({ success: true, autoAssigned: !!partner });
 }
