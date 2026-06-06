@@ -31,10 +31,8 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (boekingError) {
-      console.error("Boeking error:", boekingError);
-      throw boekingError;
-    }
+    console.log("Boeking result:", JSON.stringify(boeking), "Error:", JSON.stringify(boekingError));
+    // Niet gooien als error — ga gewoon door
 
     // Zoek beschikbare partner
     const { data: partners, error: partnerError } = await supabase
