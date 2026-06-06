@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { firstName, lastName, phone, email, serviceLabel, urgency, city, address, houseNumber, notes } = body;
 
-    await supabase.from("boekingen").insert({
+    // Sla boeking op
+    const { data: boeking, error: boekingError } = await supabase.from("boekingen").insert({
       service: serviceLabel,
       urgentie: urgency,
       klant_naam: `${firstName} ${lastName}`,
@@ -20,16 +21,78 @@ export async function POST(request: NextRequest) {
       stad: city,
       opmerkingen: notes,
       status: "nieuw",
-    });
+    }).select().single();
 
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: ["mohamedboujjou95@gmail.com"],
-      subject: `🔧 Nieuwe Boeking: ${serviceLabel} — ${firstName} ${lastName}`,
-      html: `<h2>Nieuwe Boeking</h2><p><strong>Service:</strong> ${serviceLabel}</p><p><strong>Naam:</strong> ${firstName} ${lastName}</p><p><strong>Telefoon:</strong> ${phone}</p><p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p><p><strong>Urgentie:</strong> ${urgency}</p>${notes?`<p><strong>Opmerkingen:</strong> ${notes}</p>`:""}<br><p><a href="https://vangoolen-en-zonen.vercel.app/admin">Open Dispatch Dashboard →</a></p>`,
-    });
+    if (boekingError) throw boekingError;
 
-    return NextResponse.json({ success: true });
+    // Zoek beschikbare partner in dezelfde stad
+    const { data: partners } = await supabase
+      .from("partners")
+      .select("*")
+      .eq("actief", true)
+      .eq("beschikbaar", true)
+      .ilike("stad", `%${city}%`)
+      .order("klussen_voltooid", { ascending: false })
+      .limit(1);
+
+    const partner = partners?.[0];
+
+    if (partner && boeking) {
+      // Automatisch toewijzen
+      await supabase.from("boekingen")
+        .update({ partner_id: partner.id, status: "toegewezen" })
+        .eq("id", boeking.id);
+
+      // Email naar partner
+      await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: ["mohamedboujjou95@gmail.com"],
+        subject: `🔧 DOORSTUREN naar ${partner.naam} (${partner.email}): Klus — ${serviceLabel} in ${city}`,
+        html: `
+          <h2>Automatisch Toegewezen Klus</h2>
+          <p><strong>Stuur deze email door naar:</strong> ${partner.naam} — ${partner.email}</p>
+          <hr/>
+          <p><strong>Service:</strong> ${serviceLabel}</p>
+          <p><strong>Urgentie:</strong> ${urgency}</p>
+          <p><strong>Klant:</strong> ${firstName} ${lastName}</p>
+          <p><strong>Telefoon:</strong> ${phone}</p>
+          <p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p>
+          ${notes?`<p><strong>Opmerkingen:</strong> ${notes}</p>`:""}
+          <hr/>
+          <p><a href="https://vangoolen-en-zonen.vercel.app/admin">Open Dispatch Dashboard →</a></p>
+        `,
+      });
+
+      // Bevestiging naar jou
+      await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: ["mohamedboujjou95@gmail.com"],
+        subject: `✅ Automatisch Toegewezen: ${serviceLabel} → ${partner.naam}`,
+        html: `<p>Boeking in <strong>${city}</strong> automatisch toegewezen aan <strong>${partner.naam}</strong>.</p><p><a href="https://vangoolen-en-zonen.vercel.app/admin">Bekijk in dashboard →</a></p>`,
+      });
+
+    } else {
+      // Geen beschikbare partner — stuur melding naar jou
+      await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: ["mohamedboujjou95@gmail.com"],
+        subject: `⚠️ Handmatig Toewijzen: ${serviceLabel} in ${city} — Geen beschikbare partner`,
+        html: `
+          <h2>Nieuwe Boeking — Handmatige Toewijzing Nodig</h2>
+          <p>Er is geen beschikbare partner gevonden in <strong>${city}</strong>.</p>
+          <p><strong>Service:</strong> ${serviceLabel}</p>
+          <p><strong>Urgentie:</strong> ${urgency}</p>
+          <p><strong>Klant:</strong> ${firstName} ${lastName}</p>
+          <p><strong>Telefoon:</strong> ${phone}</p>
+          <p><strong>Adres:</strong> ${address} ${houseNumber}, ${city}</p>
+          ${notes?`<p><strong>Opmerkingen:</strong> ${notes}</p>`:""}
+          <br/>
+          <p><a href="https://vangoolen-en-zonen.vercel.app/admin">Wijs handmatig toe in dashboard →</a></p>
+        `,
+      });
+    }
+
+    return NextResponse.json({ success: true, autoAssigned: !!partner });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false }, { status: 500 });
