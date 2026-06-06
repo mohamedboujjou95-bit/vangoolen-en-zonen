@@ -53,7 +53,27 @@ export default function AdminDashboard() {
 
   const assignPartner = async (boekingId: string, partnerId: string) => {
     setAssigning(true);
+    const partner = partners.find(p => p.id === partnerId);
+    const boeking = boekingen.find(b => b.id === boekingId);
     await supabase.from("boekingen").update({ partner_id: partnerId, status: "toegewezen" }).eq("id", boekingId);
+    if (partner && boeking) {
+      await fetch("/api/dispatch", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          partnerNaam: partner.naam,
+          partnerEmail: partner.email,
+          partnerTelefoon: partner.telefoon,
+          klantNaam: boeking.klant_naam,
+          klantTelefoon: boeking.klant_telefoon,
+          adres: boeking.adres,
+          stad: boeking.stad,
+          service: boeking.service,
+          urgentie: boeking.urgentie,
+          opmerkingen: boeking.opmerkingen,
+        })
+      });
+    }
     setSelectedBoeking(null);
     await fetchData();
     setAssigning(false);
