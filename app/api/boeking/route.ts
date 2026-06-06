@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
       partners = anyPartner;
     }
 
+    console.log("PARTNERS FOUND:", JSON.stringify(partners));
+    console.log("SUPABASE URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET" : "NOT SET");
     const partner = partners?.[0];
 
     if (partner && boeking) {
