@@ -41,6 +41,11 @@ export default function AdminDashboard() {
 
   useEffect(() => { fetchData(); }, []);
 
+  const approvePartner = async (partnerId: string) => {
+    await supabase.from("partners").update({ actief: true, beschikbaar: true }).eq("id", partnerId);
+    fetchData();
+  };
+
   const toggleBeschikbaar = async (partner: Partner) => {
     await supabase.from("partners").update({ beschikbaar: !partner.beschikbaar }).eq("id", partner.id);
     fetchData();
@@ -61,6 +66,8 @@ export default function AdminDashboard() {
 
   const filteredBoekingen = filter === "alle" ? boekingen : boekingen.filter(b => b.status === filter);
   const beschikbarePartners = partners.filter(p => p.beschikbaar);
+  const pendingPartners = partners.filter(p => !p.actief);
+  const actievePartners = partners.filter(p => p.actief);
 
   return (
     <div style={{minHeight:"100vh",background:"#0f172a",color:"#FDFAF6",fontFamily:"var(--font-body)"}}>
