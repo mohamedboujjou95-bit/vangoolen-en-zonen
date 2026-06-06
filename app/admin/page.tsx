@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     setLoading(true);
     const [b, p] = await Promise.all([
       supabase.from("boekingen").select("*").order("created_at", { ascending: false }),
-      supabase.from("partners").select("*").eq("actief", true).order("beschikbaar", { ascending: false }),
+      supabase.from("partners").select("*").order("beschikbaar", { ascending: false }),
     ]);
     if (b.data) setBoekingen(b.data);
     if (p.data) setPartners(p.data);
