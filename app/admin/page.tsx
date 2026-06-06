@@ -199,9 +199,22 @@ export default function AdminDashboard() {
         <div style={{background:"#1e293b",borderLeft:"1px solid rgba(255,255,255,0.08)",overflow:"auto",padding:"1.5rem"}}>
           <h2 style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:"1rem",color:"#FDFAF6",marginBottom:"1rem"}}>Gilde-Partners</h2>
           <div style={{display:"flex",flexDirection:"column",gap:"0.625rem"}}>
-            {partners.length===0?(
-              <p style={{fontSize:"0.8125rem",color:"rgba(253,250,246,0.4)"}}>Geen partners gevonden</p>
-            ):partners.map(partner=>(
+            {pendingPartners.length>0&&(
+              <div style={{marginBottom:"1rem"}}>
+                <p style={{fontSize:"0.7rem",fontWeight:700,color:"#ea580c",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:"0.5rem"}}>Wachtend ({pendingPartners.length})</p>
+                {pendingPartners.map(p2=>(
+                  <div key={p2.id} style={{background:"#0f172a",borderRadius:"0.5rem",padding:"0.75rem",border:"1px solid rgba(234,88,12,0.3)",marginBottom:"0.5rem"}}>
+                    <p style={{fontWeight:600,fontSize:"0.8125rem",color:"#FDFAF6"}}>{p2.naam}</p>
+                    <p style={{fontSize:"0.7rem",color:"rgba(253,250,246,0.4)",margin:"0.25rem 0"}}>{p2.stad} · {p2.telefoon}</p>
+                    <button onClick={()=>approvePartner(p2.id)} style={{width:"100%",padding:"0.375rem",borderRadius:"0.375rem",background:"rgba(22,163,74,0.2)",border:"1px solid rgba(22,163,74,0.4)",color:"#4ade80",cursor:"pointer",fontSize:"0.75rem",fontWeight:700}}>✓ Goedkeuren</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p style={{fontSize:"0.7rem",fontWeight:700,color:"rgba(253,250,246,0.4)",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:"0.5rem"}}>Actief ({actievePartners.length})</p>
+            {actievePartners.length===0?(
+              <p style={{fontSize:"0.8125rem",color:"rgba(253,250,246,0.4)"}}>Geen actieve partners</p>
+            ):actievePartners.map(partner=>(
               <div key={partner.id} style={{background:"#0f172a",borderRadius:"0.625rem",padding:"1rem",border:`1px solid ${partner.beschikbaar?"rgba(22,163,74,0.3)":"rgba(255,255,255,0.06)"}`}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"0.5rem"}}>
                   <p style={{fontWeight:600,fontSize:"0.875rem",color:"#FDFAF6"}}>{partner.naam}</p>
