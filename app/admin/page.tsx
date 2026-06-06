@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           {/* Filter tabs */}
           <div style={{display:"flex",gap:"0.5rem",marginBottom:"1rem",flexWrap:"wrap"}}>
             {["alle","nieuw","toegewezen","onderweg","voltooid"].map(f=>(
-              <button key={f} onClick={()=>setFilter(f)} style={{padding:"0.375rem 0.875rem",borderRadius:"999px",fontSize:"0.8125rem",fontWeight:600,cursor:"pointer",border:`1px solid ${filter===f?"#C5A059":"rgba(255,255,255,0.1)"}`,background:filter===f?"#C5A059":transparent,color:filter===f?"#1a3a6b":"rgba(253,250,246,0.6)",transition:"all 0.15s"}}>
+              <button key={f} onClick={()=>setFilter(f)} style={{padding:"0.375rem 0.875rem",borderRadius:"999px",fontSize:"0.8125rem",fontWeight:600,cursor:"pointer",border:`1px solid ${filter===f?"#C5A059":"rgba(255,255,255,0.1)"}`,background:filter===f?"#C5A059":"transparent",color:filter===f?"#1a3a6b":"rgba(253,250,246,0.6)",transition:"all 0.15s"}}>
                 {f.charAt(0).toUpperCase()+f.slice(1)} {f!=="alle"&&`(${boekingen.filter(b=>b.status===f).length})`}
               </button>
             ))}
