@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: [partnerEmail],
+      to: ["mohamedboujjou95@gmail.com"],
       subject: `🔧 Nieuwe Klus Toegewezen: ${service} — ${stad}`,
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
