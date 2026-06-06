@@ -26,14 +26,25 @@ export async function POST(request: NextRequest) {
     if (boekingError) throw boekingError;
 
     // Zoek beschikbare partner in dezelfde stad
-    const { data: partners } = await supabase
+    // Eerst zoeken in zelfde stad, dan breder
+    let { data: partners } = await supabase
       .from("partners")
       .select("*")
       .eq("actief", true)
       .eq("beschikbaar", true)
       .ilike("stad", `%${city}%`)
-      .order("klussen_voltooid", { ascending: false })
       .limit(1);
+
+    // Als geen partner in stad gevonden, pak eerste beschikbare
+    if (!partners || partners.length === 0) {
+      const { data: anyPartner } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("actief", true)
+        .eq("beschikbaar", true)
+        .limit(1);
+      partners = anyPartner;
+    }
 
     const partner = partners?.[0];
 
